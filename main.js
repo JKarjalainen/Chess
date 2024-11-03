@@ -39,4 +39,4 @@ window.onload = () => {
 	update();
 }
 
-setInterval(update, 200);
+let interval = setInterval(update, 200);

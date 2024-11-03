@@ -36,7 +36,6 @@ class MoveValidator {
 
 		if(!piece.hasMoved && diff == 2) {
 			const inFront = piece.color == COLORS.BLACK ? board[end.y-1][end.x] : board[start.y-1][end.x];
-			console.log(inFront);
 			if(inFront.isEmpty()) return true;
 
 		}
@@ -58,6 +57,34 @@ class MoveValidator {
 
 		return this.#checkAllowedMoves(start, end, board, allowedMoves);
 
+	}
+
+	static rookMoveIsValid(start, end, board) {
+		const allowedMoves = [];
+
+		for(let i = start.x + 1; i < board[0].length; i++) {
+			let piece = board[start.y][i];		
+			allowedMoves.push([i, start.y]);	
+			if(!piece.isEmpty()) break;
+		}
+		for(let i = start.x - 1; i >= 0; i--) {
+			let piece = board[start.y][i];		
+			allowedMoves.push([i, start.y]);	
+			if(!piece.isEmpty()) break;
+		}
+
+		for(let i = start.y + 1; i < board.length; i++) {
+			let piece = board[i][start.x];		
+			allowedMoves.push([start.x, i]);	
+			if(!piece.isEmpty()) break;
+		}
+		for(let i = start.y - 1; i >= 0; i--) {
+			let piece = board[i][start.x];		
+			allowedMoves.push([start.x, i]);	
+			if(!piece.isEmpty()) break;
+		}
+
+		return this.#checkAllowedMoves(start, end, board, allowedMoves);
 	}
 
 }

@@ -60,6 +60,8 @@ class Board {
 				return MoveValidator.pawnMoveIsValid(start, end, this.board);	
 			case PIECES.KNIGHT:
 				return MoveValidator.knightMoveIsValid(start, end, this.board);
+			case PIECES.ROOK:
+				return MoveValidator.rookMoveIsValid(start, end, this.board);
 		}
 
 		return true;
