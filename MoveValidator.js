@@ -134,6 +134,22 @@ class MoveValidator {
 		return this.#checkAllowedMoves(start, end, board, allowedMoves);
 	}
 
+	static kingMoveIsValid(start, end, board) {
+		const allowedMoves = [
+			[start.x, start.y + 1],
+			[start.x, start.y - 1],
+			[start.x + 1, start.y],
+			[start.x - 1, start.y],
+			[start.x - 1, start.y - 1],
+			[start.x - 1, start.y + 1],
+			[start.x + 1, start.y + 1],
+			[start.x + 1, start.y - 1],
+		]
+
+		return this.#checkAllowedMoves(start, end, board, allowedMoves);
+
+	}
+
 	static queenMoveIsValid(start, end, board) {
 		return this.bishopMoveIsValid(start, end, board) || this.rookMoveIsValid(start, end, board);
 	}

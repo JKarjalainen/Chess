@@ -65,6 +65,8 @@ class Board {
 				return MoveValidator.bishopMoveIsValid(start, end, this.board);
 			case PIECES.QUEEN:
 				return MoveValidator.queenMoveIsValid(start, end, this.board);
+			case PIECES.KING:
+				return MoveValidator.kingMoveIsValid(start, end, this.board);
 		}
 
 		return true;
