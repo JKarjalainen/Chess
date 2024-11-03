@@ -90,7 +90,6 @@ class Board {
 		if(piece.color != this.turn) return false;
 
 		if(MoveValidator.kingInCheckAfterMove(start, end, this.board, this.turn)) {
-			console.log("why")
 			return false;
 		}
 
