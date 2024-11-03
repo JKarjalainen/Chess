@@ -1,7 +1,7 @@
 class Board {
 	constructor(width) {
 		this.width = width;
-		this.spaceWidht = width / 8;
+		this.spaceWidth = width / 8;
 		this.board = this.createBoardArray();
 		this.setUp();
 		this.turn = COLORS.WHITE;
@@ -34,7 +34,7 @@ class Board {
 			for(let j = 0; j < 8; j++) {
 				ctx.fillStyle = black ? "gray" : "white";
 				black = !black;
-				ctx.fillRect(this.spaceWidht*i, this.spaceWidht*j, this.spaceWidht, this.spaceWidht);
+				ctx.fillRect(this.spaceWidth*i, this.spaceWidth*j, this.spaceWidth, this.spaceWidth);
 			}
 			black = !black;
 		}
