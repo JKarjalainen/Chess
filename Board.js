@@ -51,7 +51,6 @@ class Board {
 		let piece = this.board[start.y][start.x];
 		let endPiece = this.board[end.y][end.x]; 
 		
-
 		if(piece.isEmpty()) return false;
 		if(piece.color != this.turn) return false;
 
@@ -62,6 +61,8 @@ class Board {
 				return MoveValidator.knightMoveIsValid(start, end, this.board);
 			case PIECES.ROOK:
 				return MoveValidator.rookMoveIsValid(start, end, this.board);
+			case PIECES.BISHOP:
+				return MoveValidator.bishopMoveIsValid(start, end, this.board);
 		}
 
 		return true;

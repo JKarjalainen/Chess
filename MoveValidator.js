@@ -87,4 +87,51 @@ class MoveValidator {
 		return this.#checkAllowedMoves(start, end, board, allowedMoves);
 	}
 
+	static bishopMoveIsValid(start, end, board) {
+		const allowedMoves = [];
+
+		for(let i = 1; i < board.length; i++) {
+			let y = start.y + i;
+			let x = start.x + i;
+
+			if(board.length <= y || x >= board.length) break;
+
+			let piece = board[y][x];
+			allowedMoves.push([x, y]);
+			if(!piece.isEmpty()) break;
+		} 
+		for(let i = 1; i < board.length; i++) {
+			let y = start.y + i;
+			let x = start.x - i;
+
+			if(board.length <= y || x < 0) break;
+
+			let piece = board[y][x];
+			allowedMoves.push([x, y]);
+			if(!piece.isEmpty()) break;
+		} 
+		for(let i = 1; i < board.length; i++) {
+			let y = start.y - i;
+			let x = start.x - i;
+
+			if(y < 0 || x < 0) break;
+
+			let piece = board[y][x];
+			allowedMoves.push([x, y]);
+			if(!piece.isEmpty()) break;
+		} 
+		for(let i = 1; i < board.length; i++) {
+			let y = start.y - i;
+			let x = start.x + i;
+
+			if(y < 0 || board.length <= x) break;
+
+			let piece = board[y][x];
+			allowedMoves.push([x, y]);
+			if(!piece.isEmpty()) break;
+		} 
+
+		return this.#checkAllowedMoves(start, end, board, allowedMoves);
+	}
+
 }
