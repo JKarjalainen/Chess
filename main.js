@@ -39,4 +39,4 @@ window.onload = () => {
 	update();
 }
 
-const interval = setInterval(update(), 1000);
+setInterval(update, 200);

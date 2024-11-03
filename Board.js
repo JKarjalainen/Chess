@@ -56,9 +56,10 @@ class Board {
 		if(piece.color != this.turn) return false;
 
 		switch(piece.pieceType) {
-			case PIECES.PAWN: {
+			case PIECES.PAWN: 
 				return MoveValidator.pawnMoveIsValid(start, end, this.board);	
-			} 
+			case PIECES.KNIGHT:
+				return MoveValidator.knightMoveIsValid(start, end, this.board);
 		}
 
 		return true;
