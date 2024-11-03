@@ -73,7 +73,8 @@ class Board {
 		let piece = this.board[start.y][start.x];
 
 		this.board[end.y][end.x] = piece;
-		this.board[start.y][start.x] = new Piece(PIECES.EMPTY, 0);
+		piece.pos = new Pos(end.x, end.y);
+		this.board[start.y][start.x] = new Piece(PIECES.EMPTY, 0, new Pos(start.x, start.y));
 		if(this.turn == COLORS.WHITE) this.turn = COLORS.BLACK;
 		else if(this.turn == COLORS.BLACK) this.turn = COLORS.WHITE;
 
@@ -87,6 +88,11 @@ class Board {
 		
 		if(piece.isEmpty()) return false;
 		if(piece.color != this.turn) return false;
+
+		if(MoveValidator.kingInCheckAfterMove(start, end, this.board, this.turn)) {
+			console.log("why")
+			return false;
+		}
 
 		switch(piece.pieceType) {
 			case PIECES.PAWN: 
@@ -148,7 +154,7 @@ class Board {
 		for(let i = 0; i < 8; i++) {
 			let row = [];
 			for(let j = 0; j < 8; j++) {
-				row.push(new Piece(PIECES.EMPTY, COLORS.WHITE));
+				row.push(new Piece(PIECES.EMPTY, COLORS.WHITE, new Pos(i, j)));
 			}
 			board.push(row);
 		}
@@ -161,34 +167,34 @@ class Board {
 		const secondRow = 1;
 		const seventhRow = 6;
 		for(let i = 0; i < 8; i++) {
-			this.board[secondRow][i] = new Piece(PIECES.PAWN, COLORS.BLACK);
-			this.board[seventhRow][i] = new Piece(PIECES.PAWN, COLORS.WHITE);
+			this.board[secondRow][i] = new Piece(PIECES.PAWN, COLORS.BLACK, new Pos(i, secondRow));
+			this.board[seventhRow][i] = new Piece(PIECES.PAWN, COLORS.WHITE, new Pos(i, seventhRow));
 		}
 
 		//rooks
-		this.board[0][0] = new Piece(PIECES.ROOK, COLORS.BLACK);
-		this.board[0][this.board.length-1] = new Piece(PIECES.ROOK, COLORS.BLACK);
-		this.board[this.board.length-1][0] = new Piece(PIECES.ROOK, COLORS.WHITE);
-		this.board[this.board.length-1][this.board.length-1] = new Piece(PIECES.ROOK, COLORS.WHITE);
+		this.board[0][0] = new Piece(PIECES.ROOK, COLORS.BLACK, new Pos(0, 0));
+		this.board[0][this.board.length-1] = new Piece(PIECES.ROOK, COLORS.BLACK, new Pos(this.board.length - 1, 0));
+		this.board[this.board.length-1][0] = new Piece(PIECES.ROOK, COLORS.WHITE, new Pos(0, this.board.length - 1));
+		this.board[this.board.length-1][this.board.length-1] = new Piece(PIECES.ROOK, COLORS.WHITE, new Pos(this.board.length - 1, this.board.length - 1));
 
 		//knight
-		this.board[0][1] = new Piece(PIECES.KNIGHT, COLORS.BLACK);
-		this.board[0][6] = new Piece(PIECES.KNIGHT, COLORS.BLACK);
-		this.board[7][1] = new Piece(PIECES.KNIGHT, COLORS.WHITE);
-		this.board[7][6] = new Piece(PIECES.KNIGHT, COLORS.WHITE);
+		this.board[0][1] = new Piece(PIECES.KNIGHT, COLORS.BLACK, new Pos(1, 0));
+		this.board[0][6] = new Piece(PIECES.KNIGHT, COLORS.BLACK, new Pos(6, 0));
+		this.board[7][1] = new Piece(PIECES.KNIGHT, COLORS.WHITE, new Pos(1, 7));
+		this.board[7][6] = new Piece(PIECES.KNIGHT, COLORS.WHITE, new Pos(6, 7));
 
 		//bishop
-		this.board[0][2] = new Piece(PIECES.BISHOP, COLORS.BLACK);
-		this.board[0][5] = new Piece(PIECES.BISHOP, COLORS.BLACK);
-		this.board[7][2] = new Piece(PIECES.BISHOP, COLORS.WHITE);
-		this.board[7][5] = new Piece(PIECES.BISHOP, COLORS.WHITE);
+		this.board[0][2] = new Piece(PIECES.BISHOP, COLORS.BLACK, new Pos(2, 0));
+		this.board[0][5] = new Piece(PIECES.BISHOP, COLORS.BLACK, new Pos(5, 0));
+		this.board[7][2] = new Piece(PIECES.BISHOP, COLORS.WHITE, new Pos(2, 7));
+		this.board[7][5] = new Piece(PIECES.BISHOP, COLORS.WHITE, new Pos(5, 7));
 
 		//queen
-		this.board[0][3] = new Piece(PIECES.QUEEN, COLORS.BLACK);
-		this.board[7][3] = new Piece(PIECES.QUEEN, COLORS.WHITE);
+		this.board[0][3] = new Piece(PIECES.QUEEN, COLORS.BLACK, new Pos(3, 0));
+		this.board[7][3] = new Piece(PIECES.QUEEN, COLORS.WHITE, new Pos(3, 7));
 
 		//king
-		this.board[0][4] = new Piece(PIECES.KING, COLORS.BLACK);
-		this.board[7][4] = new Piece(PIECES.KING, COLORS.WHITE);
+		this.board[0][4] = new Piece(PIECES.KING, COLORS.BLACK, new Pos(4, 0));
+		this.board[7][4] = new Piece(PIECES.KING, COLORS.WHITE, new Pos(4, 7));
 	}
 }

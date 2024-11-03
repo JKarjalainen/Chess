@@ -15,6 +15,59 @@ class MoveValidator {
 		return moveIsAllowed && isEmptyOrEnemy;
 
 	}
+
+	static kingInCheck(board, turn) {
+		let wholeBoard = [];
+		board.forEach(row => {
+			wholeBoard.push(...row);
+		})
+
+		let king = wholeBoard.find(piece => {
+			return piece.color == turn && piece.pieceType == PIECES.KING;
+		})
+
+		let enemyPieces = wholeBoard.filter(p => {
+			return !p.isEmpty() && p.color != turn;
+		})
+
+		let kingIsInCheck = enemyPieces.some(p => {
+			switch(p.pieceType) {
+				case PIECES.PAWN:
+					return MoveValidator.pawnMoveIsValid(p.pos, king.pos, board);
+				case PIECES.KNIGHT:
+					return MoveValidator.knightMoveIsValid(p.pos, king.pos, board);
+				case PIECES.ROOK:
+					return MoveValidator.rookMoveIsValid(p.pos, king.pos, board);
+				case PIECES.BISHOP:
+					return MoveValidator.bishopMoveIsValid(p.pos, king.pos, board);
+				case PIECES.QUEEN:
+					return MoveValidator.queenMoveIsValid(p.pos, king.pos, board);
+				case PIECES.KING:
+					return MoveValidator.kingMoveIsValid(p.pos, king.pos, board)
+			}			
+		});
+		
+		return kingIsInCheck;	
+	}
+
+	static kingInCheckAfterMove(start, end, board, turn) {
+		let piece = board[start.y][start.x];
+		let endPiece = board[end.y][end.x];
+
+		board[end.y][end.x] = piece;
+		piece.pos = end;
+		board[start.y][start.x] = new Piece(PIECES.EMPTY, 0, new Pos(start.x, start.y));
+
+		let kingInCheck = this.kingInCheck(board, turn);
+
+		//undo last move
+		board[start.y][start.x] = piece;
+		piece.pos = start;
+		board[end.y][end.x] = endPiece;
+			
+		return kingInCheck;
+	}
+
 	static pawnMoveIsValid(start, end, board) {
 		const piece = board[start.y][start.x];
 		const endPiece = board[end.y][end.x]; 
@@ -152,6 +205,10 @@ class MoveValidator {
 
 	static queenMoveIsValid(start, end, board) {
 		return this.bishopMoveIsValid(start, end, board) || this.rookMoveIsValid(start, end, board);
+	}
+
+	static gameIsOver(board) {
+
 	}
 
 }
