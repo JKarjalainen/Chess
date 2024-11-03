@@ -134,4 +134,8 @@ class MoveValidator {
 		return this.#checkAllowedMoves(start, end, board, allowedMoves);
 	}
 
+	static queenMoveIsValid(start, end, board) {
+		return this.bishopMoveIsValid(start, end, board) || this.rookMoveIsValid(start, end, board);
+	}
+
 }
