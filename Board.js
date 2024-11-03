@@ -5,6 +5,23 @@ class Board {
 		this.board = this.createBoardArray();
 		this.setUp();
 		this.turn = COLORS.WHITE;
+		this.holding = null;
+		this.holdingStartPos = null;
+		this.images = {
+			0: [],
+			1: []
+		}
+		this.loadImages();
+	}
+
+	loadImages() {
+		for(let i = 1; i < 7; i++) {
+			for(let j = 0; j < 2; j++) {
+				let image = document.createElement("img");
+				image.src = "./images/piece" + i + j + ".png";
+				this.images[j][i] = image;
+			}
+		}
 	}
 
 	draw() {
@@ -27,11 +44,29 @@ class Board {
 		for(let i = 0; i < 8; i++) {
 			for(let j = 0; j < 8; j++) {
 				let pos = new Pos(j, i);
+				if(pos.canvasX == this.holdingStartPos?.canvasX && pos.canvasY == this.holdingStartPos?.canvasY) {
+					continue;	
+				}
 				let piece = this.board[i][j];
 				this.drawPieceAsImage(piece, pos);
 				
 			}
 		}
+	}
+
+
+	getPieceInPos(pos) {
+		return this.board[pos.y][pos.x];
+	}
+
+	drawHolding(pos) {
+		if(!this.holding || this.holding.color != this.turn) { 
+			this.holding = null;
+			this.holdingStartPos = null;
+			return; 
+		}	
+		let newPos = new Pos(pos.x - SQUARE_SIZE / 2, pos.y - SQUARE_SIZE / 2);
+		this.drawPieceAsImage(this.holding, newPos, false);
 	}
 
 	movePieceInPos(start, end) {
@@ -49,7 +84,6 @@ class Board {
 		if(start.equals(end)) return false;
 
 		let piece = this.board[start.y][start.x];
-		let endPiece = this.board[end.y][end.x]; 
 		
 		if(piece.isEmpty()) return false;
 		if(piece.color != this.turn) return false;
@@ -99,12 +133,14 @@ class Board {
 		}	
 	}
 
-	drawPieceAsImage(piece, pos) {
+	drawPieceAsImage(piece, pos, onGrid = true) {
 		if(piece.pieceType == PIECES.EMPTY) return;
 
-		let image = document.createElement("img");
-		image.src = "./images/piece" + piece.pieceType + piece.color + ".png";
-		ctx.drawImage(image, pos.canvasX, pos.canvasY, SQUARE_SIZE, SQUARE_SIZE);
+		let image = this.images[piece.color][piece.pieceType];
+		if(onGrid)
+			ctx.drawImage(image, pos.canvasX, pos.canvasY, SQUARE_SIZE, SQUARE_SIZE);
+		else
+			ctx.drawImage(image, pos.x, pos.y, SQUARE_SIZE, SQUARE_SIZE);
 	}
 
 	createBoardArray() {
