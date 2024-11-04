@@ -31,20 +31,22 @@ class MoveValidator {
 		})
 
 		let kingIsInCheck = enemyPieces.some(p => {
+			let test = []
 			switch(p.pieceType) {
 				case PIECES.PAWN:
-					return MoveValidator.pawnMoveIsValid(p.pos, king.pos, board);
+					test.push(MoveValidator.pawnMoveIsValid(p.pos, king.pos, board));
 				case PIECES.KNIGHT:
-					return MoveValidator.knightMoveIsValid(p.pos, king.pos, board);
+					test.push(MoveValidator.knightMoveIsValid(p.pos, king.pos, board));
 				case PIECES.ROOK:
-					return MoveValidator.rookMoveIsValid(p.pos, king.pos, board);
+					test.push(MoveValidator.rookMoveIsValid(p.pos, king.pos, board));
 				case PIECES.BISHOP:
-					return MoveValidator.bishopMoveIsValid(p.pos, king.pos, board);
+					test.push(MoveValidator.bishopMoveIsValid(p.pos, king.pos, board));
 				case PIECES.QUEEN:
-					return MoveValidator.queenMoveIsValid(p.pos, king.pos, board);
+					test.push(MoveValidator.queenMoveIsValid(p.pos, king.pos, board));
 				case PIECES.KING:
-					return MoveValidator.kingMoveIsValid(p.pos, king.pos, board)
+					test.push(MoveValidator.kingMoveIsValid(p.pos, king.pos, board))
 			}			
+			return test.some(x => x == true);
 		});
 		
 		return kingIsInCheck;	
@@ -96,7 +98,37 @@ class MoveValidator {
 		return diff < 2;
 	}
 
+	static getPawnMoves(start, board) {
+		const piece = board[start.y][start.x];
+		const front = piece.color == COLORS.BLACK ? 1 : -1;
+		const frontPos = start.y + front;
+		const moves = [
+			[start.x, frontPos]
+		]
+
+		if(!piece.hasMoved && board[frontPos][start.x].isEmpty()) {
+			moves.push([start.x, start.y + front * 2]);
+		}
+
+		if(start.x > 0) {
+			const pieceFrontLeft = board[frontPos][start.x - 1];
+			if(!pieceFrontLeft.isEmpty() && pieceFrontLeft.color != piece.color)
+				moves.push([start.x - 1, frontPos])
+		} else if(start.x < 7) {
+			const pieceFrontRight = board[frontPos][start.x + 1];
+			if(!pieceFrontRight.isEmpty() && pieceFrontLeft.color != piece.color)
+				moves.push([start.x + 1, frontPos])
+		}
+		return moves;
+	}
+
 	static knightMoveIsValid(start, end, board) {
+		const allowedMoves = this.getKnightMoves(start);
+		return this.#checkAllowedMoves(start, end, board, allowedMoves);
+
+	}
+
+	static getKnightMoves(start) {
 		const allowedMoves = [
 			[start.x+1, start.y+2],
 			[start.x-1, start.y+2],
@@ -106,15 +138,19 @@ class MoveValidator {
 			[start.x+2, start.y-1],
 			[start.x-2, start.y+1],
 			[start.x-2, start.y-1],
-		]
+		];
 
-		return this.#checkAllowedMoves(start, end, board, allowedMoves);
-
+		return allowedMoves.filter(move => {
+			return (move[0] < 8 && move[0] >= 0) && (move[1] < 8 && move[1] >= 0)
+		});
 	}
 
 	static rookMoveIsValid(start, end, board) {
-		const allowedMoves = [];
+		return this.#checkAllowedMoves(start, end, board, this.getRookMoves(start, board));
+	}
 
+	static getRookMoves(start, board) {
+		const allowedMoves = [];
 		for(let i = start.x + 1; i < board[0].length; i++) {
 			let piece = board[start.y][i];		
 			allowedMoves.push([i, start.y]);	
@@ -136,11 +172,15 @@ class MoveValidator {
 			allowedMoves.push([start.x, i]);	
 			if(!piece.isEmpty()) break;
 		}
-
-		return this.#checkAllowedMoves(start, end, board, allowedMoves);
+		return allowedMoves;
 	}
 
 	static bishopMoveIsValid(start, end, board) {
+		const allowedMoves = this.getBishopMoves(start, board);
+		return this.#checkAllowedMoves(start, end, board, allowedMoves);
+	}
+
+	static getBishopMoves(start, board) {
 		const allowedMoves = [];
 
 		for(let i = 1; i < board.length; i++) {
@@ -183,11 +223,15 @@ class MoveValidator {
 			allowedMoves.push([x, y]);
 			if(!piece.isEmpty()) break;
 		} 
-
-		return this.#checkAllowedMoves(start, end, board, allowedMoves);
+		return allowedMoves;
 	}
 
 	static kingMoveIsValid(start, end, board) {
+		return this.#checkAllowedMoves(start, end, board, this.getKingMoves(start, board));
+
+	}
+
+	static getKingMoves(start, board) {
 		const allowedMoves = [
 			[start.x, start.y + 1],
 			[start.x, start.y - 1],
@@ -197,18 +241,61 @@ class MoveValidator {
 			[start.x - 1, start.y + 1],
 			[start.x + 1, start.y + 1],
 			[start.x + 1, start.y - 1],
-		]
-
-		return this.#checkAllowedMoves(start, end, board, allowedMoves);
-
+		];
+		return allowedMoves.filter(move => {
+			return (move[0] < 8 && move[0] >= 0) && (move[1] < 8 && move[1] >= 0)
+		});
 	}
 
 	static queenMoveIsValid(start, end, board) {
 		return this.bishopMoveIsValid(start, end, board) || this.rookMoveIsValid(start, end, board);
 	}
 
-	static gameIsOver(board) {
+	static getValidMoves(piece, board, turn) {
+		let moves = [];
+		switch(piece.pieceType) {
+			case PIECES.PAWN:
+				moves.push(...this.getPawnMoves(piece.pos, board))
+				break;
+			case PIECES.KNIGHT:
+				moves.push(...this.getKnightMoves(piece.pos));
+				break;
+			case PIECES.ROOK:
+				moves.push(...this.getRookMoves(piece.pos, board));
+				break;
+			case PIECES.BISHOP:
+				moves.push(...this.getBishopMoves(piece.pos, board));
+				break;
+			case PIECES.QUEEN:
+				moves.push(...this.getBishopMoves(piece.pos, board), ...this.getRookMoves(piece.pos, board))
+				break;
+			case PIECES.KING:
+				moves.push(...this.getKingMoves(piece.pos, board));
+				break;
+		}
 
+		let validMoves = this.removeUnvalidMoves(piece, moves, board, turn);		
+		return validMoves;
 	}
 
+	static removeUnvalidMoves(piece, moves, board, turn) {
+		const newMoves = [];
+		const allowedMoves = [];
+		moves.forEach(move => {
+			let end = board[move[1]][move[0]];
+			let isEmptyOrEnemy = end.isEmpty() || (!end.isEmpty() && end.color != piece.color);
+			if(isEmptyOrEnemy)
+				newMoves.push(move);
+		});
+
+		newMoves.forEach(move => {
+			let start = piece.pos;
+			let end = new Pos(move[0], move[1]);
+			let inCheck = this.kingInCheckAfterMove(start, end, board, turn)	
+			if(!inCheck)
+				allowedMoves.push(move);
+		});
+
+		return allowedMoves;
+	}
 }

@@ -26,6 +26,7 @@ canvas.addEventListener("mouseup", (e) => {
 
 	if(board.moveIsValid(new Pos(mousedownX, mousedownY), new Pos(mouseupX, mouseupY))) {
 		board.movePieceInPos(new Pos(mousedownX, mousedownY), new Pos(mouseupX, mouseupY));
+		board.checkWin();
 	}
 	board.holding = null;
 	board.holdingStartPos = null;

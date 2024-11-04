@@ -196,4 +196,30 @@ class Board {
 		this.board[0][4] = new Piece(PIECES.KING, COLORS.BLACK, new Pos(4, 0));
 		this.board[7][4] = new Piece(PIECES.KING, COLORS.WHITE, new Pos(4, 7));
 	}
+
+	checkWin() {
+		//let turn = this.turn == COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
+		if(!MoveValidator.kingInCheck(this.board, this.turn)) {
+			return false;
+		}
+
+		let pieces = this.getWholeBoard().filter(piece => {
+			return piece.color == this.turn && !piece.isEmpty();
+		});
+
+		let hasValidMoves = pieces.some(piece => {
+			let validMoves = MoveValidator.getValidMoves(piece, this.board, this.turn);
+			//console.log(piece, validMoves);
+			return validMoves.length > 0;
+		})
+	}
+
+	getWholeBoard() {
+		const whole = [];
+		this.board.forEach(e => {
+			whole.push(...e);
+		});
+
+		return whole;
+	}
 }
