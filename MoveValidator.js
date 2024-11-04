@@ -31,22 +31,20 @@ class MoveValidator {
 		})
 
 		let kingIsInCheck = enemyPieces.some(p => {
-			let test = []
 			switch(p.pieceType) {
 				case PIECES.PAWN:
-					test.push(MoveValidator.pawnMoveIsValid(p.pos, king.pos, board));
+					return MoveValidator.pawnMoveIsValid(p.pos, king.pos, board);
 				case PIECES.KNIGHT:
-					test.push(MoveValidator.knightMoveIsValid(p.pos, king.pos, board));
+					return MoveValidator.knightMoveIsValid(p.pos, king.pos, board);
 				case PIECES.ROOK:
-					test.push(MoveValidator.rookMoveIsValid(p.pos, king.pos, board));
+					return MoveValidator.rookMoveIsValid(p.pos, king.pos, board);
 				case PIECES.BISHOP:
-					test.push(MoveValidator.bishopMoveIsValid(p.pos, king.pos, board));
+					return MoveValidator.bishopMoveIsValid(p.pos, king.pos, board);
 				case PIECES.QUEEN:
-					test.push(MoveValidator.queenMoveIsValid(p.pos, king.pos, board));
+					return MoveValidator.queenMoveIsValid(p.pos, king.pos, board);
 				case PIECES.KING:
-					test.push(MoveValidator.kingMoveIsValid(p.pos, king.pos, board))
+					return MoveValidator.kingMoveIsValid(p.pos, king.pos, board);
 			}			
-			return test.some(x => x == true);
 		});
 		
 		return kingIsInCheck;	
@@ -71,37 +69,17 @@ class MoveValidator {
 	}
 
 	static pawnMoveIsValid(start, end, board) {
-		const piece = board[start.y][start.x];
-		const endPiece = board[end.y][end.x]; 
-		let diff = start.y - end.y;
-		if(piece.color == COLORS.BLACK) diff *= -1;
-
-		if(diff < 1) {
-			return false;
-		}
-
-		// eating
-		if(end.x != start.x) {
-			if(endPiece.isEmpty() || endPiece.color == piece.color) return false;
-			if(diff > 1) return false;	
-			return true;
-		}
-
-		if(!endPiece.isEmpty()) return false;
-
-		if(!piece.hasMoved && diff == 2) {
-			const inFront = piece.color == COLORS.BLACK ? board[end.y-1][end.x] : board[start.y-1][end.x];
-			if(inFront.isEmpty()) return true;
-
-		}
-
-		return diff < 2;
+		const moves = this.getPawnMoves(start, board);
+		return moves.some(move => {
+			return move[0] == end.x && move[1] == end.y;
+		});
 	}
 
 	static getPawnMoves(start, board) {
 		const piece = board[start.y][start.x];
 		const front = piece.color == COLORS.BLACK ? 1 : -1;
 		const frontPos = start.y + front;
+		if(frontPos > 7 || frontPos < 0) return [];
 		const moves = [
 			[start.x, frontPos]
 		]
@@ -114,9 +92,10 @@ class MoveValidator {
 			const pieceFrontLeft = board[frontPos][start.x - 1];
 			if(!pieceFrontLeft.isEmpty() && pieceFrontLeft.color != piece.color)
 				moves.push([start.x - 1, frontPos])
-		} else if(start.x < 7) {
+		}
+		if(start.x < 7) {
 			const pieceFrontRight = board[frontPos][start.x + 1];
-			if(!pieceFrontRight.isEmpty() && pieceFrontLeft.color != piece.color)
+			if(!pieceFrontRight.isEmpty() && pieceFrontRight.color != piece.color)
 				moves.push([start.x + 1, frontPos])
 		}
 		return moves;

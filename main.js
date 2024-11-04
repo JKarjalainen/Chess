@@ -1,5 +1,8 @@
 "use strict"
-
+//TODOLIST
+//fix pawn eating forward
+//castleing
+//en passant
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 const WIDTH = BOARD_SIZE;

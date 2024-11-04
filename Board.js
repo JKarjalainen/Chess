@@ -198,7 +198,6 @@ class Board {
 	}
 
 	checkWin() {
-		//let turn = this.turn == COLORS.WHITE ? COLORS.BLACK : COLORS.WHITE;
 		if(!MoveValidator.kingInCheck(this.board, this.turn)) {
 			return false;
 		}
@@ -209,9 +208,12 @@ class Board {
 
 		let hasValidMoves = pieces.some(piece => {
 			let validMoves = MoveValidator.getValidMoves(piece, this.board, this.turn);
-			//console.log(piece, validMoves);
+			console.log(piece, validMoves);
 			return validMoves.length > 0;
 		})
+		if(!hasValidMoves) {
+			console.log("Win");
+		}	
 	}
 
 	getWholeBoard() {
